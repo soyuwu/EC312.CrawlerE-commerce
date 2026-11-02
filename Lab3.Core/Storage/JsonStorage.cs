@@ -5,7 +5,8 @@ public class JsonStorage
 {
     public async Task SaveAsync(
         List<Product> products,
-        string fileName)
+        string fileName,
+        CancellationToken cancellationToken = default)
     {
         var options = new JsonSerializerOptions
         {
@@ -17,7 +18,7 @@ public class JsonStorage
             options
         );
 
-        await File.WriteAllTextAsync(fileName, json);
+        await File.WriteAllTextAsync(fileName, json, cancellationToken);
     }
 }
 

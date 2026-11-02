@@ -18,6 +18,7 @@ public sealed class MallowExportService
     public async Task<ExportSummary> ExportAsync(
         IEnumerable<Product> products,
         string outputPath = "mallow-products.csv",
+        IProgress<CrawlProgress>? progress = null,
         CancellationToken cancellationToken = default)
     {
         var productList = products.GroupBy(product => product.Id).Select(group => group.First()).ToList();
@@ -28,8 +29,11 @@ public sealed class MallowExportService
         await using var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions { Headless = true });
         var page = await browser.NewPageAsync();
 
-        foreach (var product in productList)
+        for (var index = 0; index < productList.Count; index++)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+            var product = productList[index];
+            progress?.Report(new CrawlProgress($"Crawling product {index + 1} of {productList.Count}: {product.Name}", index, productList.Count));
             try
             {
                 product.Variants = await _productCrawler.CrawlVariantsAsync(page, product, variantCache, cancellationToken);
@@ -62,6 +66,7 @@ public sealed class MallowExportService
         }
 
         await _csvExporter.WriteAsync(outputPath, rows);
+        progress?.Report(new CrawlProgress("Export completed.", productList.Count, productList.Count));
         return new ExportSummary(
             exportableProducts.Count,
             exportableProducts.Sum(product => product.Variants.Count),

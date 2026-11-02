@@ -21,17 +21,19 @@ public class CategoryCrawler
 
     public async Task<List<Product>> CrawlCategoryAsync(
         string categoryUrl,
-        string categoryName)
+        string categoryName,
+        CancellationToken cancellationToken = default)
     {
         var products = new Dictionary<long, Product>();
 
         for (int page = 1; ; page++)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             var url = BuildPageUrl(categoryUrl, page);
 
             Console.WriteLine($"Crawling: {url}");
 
-            var html = await _httpClient.GetStringAsync(url);
+            var html = await _httpClient.GetStringAsync(url, cancellationToken);
 
             var context = BrowsingContext.New(
                 Configuration.Default
@@ -62,7 +64,7 @@ public class CategoryCrawler
             if (pageProducts.Count == 0 || newProducts == 0)
                 break;
 
-            await Task.Delay(500);
+            await Task.Delay(500, cancellationToken);
         }
 
         return products.Values.ToList();

@@ -5,7 +5,9 @@
 # IDE and editor files
 .vs/
 .vscode/
+.idea/
 *.user
+*.userprefs
 *.suo
 *.userosscache
 *.sln.docstates
@@ -13,6 +15,7 @@
 # Generated crawl output
 mallow-products.csv
 mallow-products.json
+output/
 
 # Logs and temporary files
 *.log
@@ -22,3 +25,11 @@ mallow-products.json
 # Playwright browser downloads and reports
 playwright-report/
 test-results/
+[Tt]est[Rr]esults/
+coverage/
+coverage*.xml
+
+# NuGet packages and local tooling
+packages/
+*.nupkg
+*.snupkg
