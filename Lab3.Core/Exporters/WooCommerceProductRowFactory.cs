@@ -37,7 +37,7 @@ public sealed class WooCommerceProductRowFactory
         row[Sku] = product.Sku;
         row[Name] = product.Name;
         row[Published] = "1";
-        row[InStock] = discoveredVariants.Any(variant => variant.Available > 0) ? "1" : "0";
+        row[InStock] = discoveredVariants.Any(variant => variant.Available != 0) ? "1" : "0";
         row[Categories] = product.Category;
         row[Images] = string.Join(", ", GetProductImages(product));
 
@@ -77,8 +77,12 @@ public sealed class WooCommerceProductRowFactory
         row[Sku] = variant.Sku;
         row[Name] = variant.Name;
         row[Published] = "1";
-        row[InStock] = variant.Available > 0 ? "1" : "0";
-        row[Stock] = variant.Available.ToString(CultureInfo.InvariantCulture);
+        // -1 means Mallow did not provide a count. Keep the variation sellable,
+        // but omit the WooCommerce quantity instead of exporting a negative value.
+        row[InStock] = variant.Available != 0 ? "1" : "0";
+        row[Stock] = variant.Available >= 0
+            ? variant.Available.ToString(CultureInfo.InvariantCulture)
+            : null;
         row[RegularPrice] = variant.Price.ToString(CultureInfo.InvariantCulture);
         row[Parent] = string.IsNullOrWhiteSpace(parent.Sku)
             ? $"id:{parent.Id.ToString(CultureInfo.InvariantCulture)}"

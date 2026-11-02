@@ -24,8 +24,10 @@ public sealed class MallowExportValidator
         {
             if (!parents.TryGetValue(variant.ParentId, out var parent))
                 errors.Add($"Variant {variant.Id} references missing parent {variant.ParentId}.");
-            if (variant.Available < 0)
-                errors.Add($"Variant {variant.Id} has negative stock ({variant.Available}).");
+            // Mallow uses -1 when a concrete inventory quantity is unavailable.
+            // Values below -1 are still invalid source data.
+            if (variant.Available < -1)
+                errors.Add($"Variant {variant.Id} has invalid stock ({variant.Available}).");
             if (string.IsNullOrWhiteSpace(variant.Sku))
                 errors.Add($"Variant {variant.Id} has no SKU from Mallow.");
 
