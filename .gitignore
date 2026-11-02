@@ -1,0 +1,24 @@
+# Build output
+[Bb]in/
+[Oo]bj/
+
+# IDE and editor files
+.vs/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Generated crawl output
+mallow-products.csv
+mallow-products.json
+
+# Logs and temporary files
+*.log
+*.tmp
+*.bak
+
+# Playwright browser downloads and reports
+playwright-report/
+test-results/
